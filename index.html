@@ -3,119 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina - The Future of Light</title>
+    <title>Lumina - Series B Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @keyframes pulse-gold {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .loading-bar { transition: width 0.5s ease-in-out; }
-        .hidden { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(23, 23, 23, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .progress-glow { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex items-center justify-center font-sans overflow-hidden">
+<body class="bg-[#0a0a0a] text-zinc-200 min-h-screen flex items-center justify-center p-4">
 
-    <div id="app" class="w-full max-w-md p-8 border border-zinc-800 rounded-3xl bg-zinc-900 shadow-2xl text-center">
-        
-        <div id="hero-section">
-            <div class="mb-6 inline-block p-4 rounded-full bg-yellow-500/10 text-yellow-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-            </div>
-            <h1 class="text-3xl font-bold tracking-tight mb-2">Lumina OS</h1>
-            <p class="text-zinc-400 mb-8">Revolutionizing the Photon-as-a-Service Paradigm.</p>
-            
-            <button id="mainButton" onclick="startCatastrophe()" class="w-full py-4 bg-zinc-100 text-zinc-950 font-bold rounded-xl hover:bg-white transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-white/5">
-                ACTIVATE LIGHT
-            </button>
-        </div>
-
-        <div id="process-section" class="hidden space-y-6">
-            <h2 id="status-text" class="text-sm font-mono uppercase tracking-widest text-yellow-500">Initializing Ecosystem...</h2>
-            
-            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-                <div id="progress-bar" class="loading-bar bg-yellow-500 h-full w-0"></div>
-            </div>
-
-            <div id="log-container" class="text-left bg-black p-4 rounded-lg h-32 overflow-y-auto text-xs font-mono text-zinc-500 space-y-1 border border-zinc-800">
+    <div id="game-container" class="w-full max-w-xl glass p-10 rounded-3xl shadow-2xl transition-all duration-500">
+        <div id="content">
+            <div class="text-center">
+                <div class="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-600 shadow-lg">
+                    <span class="text-3xl">💡</span>
                 </div>
-
-            <div id="decision-node" class="hidden p-4 border border-blue-500/30 bg-blue-500/5 rounded-lg">
-                <p class="text-xs text-blue-400 mb-3">AI PREDICTION ENGINE: You appear to be in a dark room. Is this a strategic choice?</p>
-                <div class="flex gap-2">
-                    <button class="flex-1 text-[10px] bg-blue-500 py-2 rounded uppercase font-bold" onclick="log('User confirmed darkness preference. Pivoting to "Night Vision" mode.')">Yes (Strategic)</button>
-                    <button class="flex-1 text-[10px] border border-blue-500 py-2 rounded uppercase font-bold" onclick="log('User rejects AI advice. Flagging for review.')">No (Force On)</button>
-                </div>
+                <h1 class="text-4xl font-semibold tracking-tight text-white mb-4">Lumina OS</h1>
+                <p class="text-zinc-400 mb-10 text-lg">The world's first AI-driven, hyper-scalable, decentralized illumination ecosystem.</p>
+                
+                <button onclick="nextStep('startup')" class="group relative w-full py-4 bg-white text-black font-bold rounded-xl transition-all hover:bg-zinc-200 overflow-hidden">
+                    <span class="relative z-10">INITIALIZE LIGHT REQUEST</span>
+                    <div class="absolute inset-0 w-0 bg-zinc-300 transition-all group-hover:w-full"></div>
+                </button>
             </div>
         </div>
 
-        <div id="failure-section" class="hidden text-center animate-in fade-in zoom-in duration-500">
-            <div class="text-red-500 mb-4">
-                <svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">Request Deprecated</h3>
-            <p id="fail-reason" class="text-zinc-400 text-sm italic mb-6"></p>
-            <button onclick="location.reload()" class="text-xs text-zinc-500 underline hover:text-white">Back to Seed Round</button>
+        <div id="meta-ui" class="hidden mt-10 pt-6 border-t border-zinc-800 text-[10px] uppercase tracking-[0.2em] text-zinc-500 flex justify-between">
+            <span>Status: <span id="status-tag" class="text-yellow-500">Idle</span></span>
+            <span>VC Funding: <span id="funding-tag" class="text-green-500">$2.4M</span></span>
         </div>
     </div>
 
     <script>
-        const logs = [
-            "Booting Synergy-Core v4.2.0...",
-            "Contacting AWS (Amazon Web Sunlight)...",
-            "Establishing consensus via Proof-of-Brightness...",
-            "Forming Lumina-Squad steering committee...",
-            "Generating 400-page ESG Carbon Neutrality Report...",
-            "AI predicting user intent (Deep Learning)...",
-            "Consulting with Venture Capitalists...",
-            "Legal team reviewing photon distribution license...",
-            "Finalizing Stakeholder Alignment...",
-            "Budget constraints detected in Q3 projection..."
-        ];
+        const content = document.getElementById('content');
+        const statusTag = document.getElementById('status-tag');
+        const fundingTag = document.getElementById('funding-tag');
+        const metaUI = document.getElementById('meta-ui');
 
-        function log(msg) {
-            const container = document.getElementById('log-container');
-            const entry = document.createElement('div');
-            entry.innerText = `> ${msg}`;
-            container.appendChild(entry);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        async function startCatastrophe() {
-            document.getElementById('hero-section').classList.add('hidden');
-            document.getElementById('process-section').classList.remove('hidden');
-            
-            const progressBar = document.getElementById('progress-bar');
-            const statusText = document.getElementById('status-text');
-
-            for (let i = 0; i < logs.length; i++) {
-                statusText.innerText = logs[i];
-                progressBar.style.width = `${(i + 1) * 10}%`;
-                log(logs[i]);
-
-                if (i === 5) {
-                    document.getElementById('decision-node').classList.remove('hidden');
-                    await new Promise(r => setTimeout(r, 2500));
-                    document.getElementById('decision-node').classList.add('hidden');
-                }
-
-                await new Promise(r => setTimeout(r, 1200));
+        const scenarios = {
+            startup: {
+                title: "Provisioning Resources",
+                desc: "Our serverless architecture is spinning up. However, we've detected you're on a 'Basic' plan.",
+                status: "Monetizing...",
+                options: [
+                    { text: "Watch 30s Ad for Light", link: 'ad' },
+                    { text: "Upgrade to Enterprise ($499/mo)", link: 'enterprise' }
+                ]
+            },
+            ad: {
+                title: "Strategic Partnership",
+                desc: "The ad is loading... It's an ad for a different lightbulb startup. They claim to be 10x faster.",
+                status: "Retention Risk",
+                options: [
+                    { text: "Ignore & Wait", link: 'bureaucracy' },
+                    { text: "Click Ad (Abandon Lumina)", link: 'traitor' }
+                ]
+            },
+            enterprise: {
+                title: "Welcome, Visionary",
+                desc: "Enterprise tier unlocked. We've assigned a dedicated 'Success Manager' to your light switch. He needs to hop on a 15-minute sync.",
+                status: "Syncing...",
+                options: [
+                    { text: "Schedule Zoom Call", link: 'bureaucracy' },
+                    { text: "Ask for 'Async' Approval", link: 'denied' }
+                ]
+            },
+            bureaucracy: {
+                title: "The Alignment Phase",
+                desc: "The Success Manager loves the 'Light' idea but needs a Carbon Impact Study. The polar bears are watching.",
+                status: "Analyzing...",
+                options: [
+                    { text: "Generate ESG Report", link: 'pivot' },
+                    { text: "Bribe with Carbon Credits", link: 'pivot' }
+                ]
+            },
+            pivot: {
+                title: "URGENT PIVOT",
+                desc: "Market conditions have changed. Investors no longer believe in 'Light'. We are now a Crypto-Darkness company.",
+                status: "Pivoting...",
+                options: [
+                    { text: "Accept the Void", link: 'void' },
+                    { text: "Insist on Light (End of Runway)", link: 'denied' }
+                ]
+            },
+            denied: {
+                title: "Mission Aborted",
+                desc: "The Board of Directors has determined that turning on the light is 'non-core' to our 2026 roadmap.",
+                status: "Bankrupt",
+                options: [{ text: "Restart Disrupting", link: 'restart' }]
+            },
+            void: {
+                title: "The Darkness is Live",
+                desc: "Congratulations. By doing nothing, you have saved $0.0004 in energy costs. Investors are thrilled. You are now the CEO.",
+                status: "Exit Achieved",
+                options: [{ text: "IPO (Restart)", link: 'restart' }]
+            },
+            traitor: {
+                title: "Churn Detected",
+                desc: "You clicked the competitor's ad. They also have a 12-step verification process. There is no escape.",
+                status: "Churned",
+                options: [{ text: "Return to Lumina", link: 'restart' }]
             }
+        };
 
-            endInFailure();
-        }
-
-        function endInFailure() {
-            const failures = [
-                "Light request forwarded to the Review Committee.",
-                "Photon emission canceled due to excessive simplicity.",
-                "Action denied: Current budget only supports 'Thought-Leadership' about light.",
-                "Error: No Investor-Market-Fit found for this specific lamp."
-            ];
+        function nextStep(id) {
+            if (id === 'restart') return location.reload();
             
-            document.getElementById('process-section').classList.add('hidden');
-            document.getElementById('failure-section').classList.remove('hidden');
-            document.getElementById('fail-reason').innerText = failures[Math.floor(Math.random() * failures.length)];
+            const step = scenarios[id];
+            metaUI.classList.remove('hidden');
+            statusTag.innerText = step.status;
+            
+            // Randomly decrease funding to add stress
+            const currentFunding = parseInt(fundingTag.innerText.replace(/[^0-9]/g, ''));
+            fundingTag.innerText = `$${(currentFunding * 0.8).toFixed(1)}M`;
+
+            content.innerHTML = `
+                <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <h2 class="text-2xl font-bold text-white mb-2">${step.title}</h2>
+                    <p class="text-zinc-400 mb-8">${step.desc}</p>
+                    <div class="space-y-3">
+                        ${step.options.map(opt => `
+                            <button onclick="nextStep('${opt.link}')" class="w-full py-3 px-6 border border-zinc-700 rounded-xl hover:bg-zinc-800 transition-all text-sm font-medium">
+                                ${opt.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>
